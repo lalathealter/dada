@@ -1,5 +1,5 @@
 # The base go-image
-FROM golang:1.22.0-alpine3.19
+FROM golang:latest
  
 # Create a directory for the app
 RUN mkdir /app
