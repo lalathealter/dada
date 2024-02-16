@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+
 )
  
 func MainHandler(w http.ResponseWriter, r *http.Request) {
@@ -21,9 +22,10 @@ func main() {
   http.HandleFunc("/", MainHandler)
 
   port := "8080"
-  host := "localhost"
+  host := ""
   hp := net.JoinHostPort(host, port)
 
   fmt.Println("Listening on port ", port)
   http.ListenAndServe(hp, nil)
 }
+
