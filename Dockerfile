@@ -14,5 +14,6 @@ WORKDIR /app
 # go build will build an executable file named server in the current directory
 RUN go build -o server . 
  
+EXPOSE 8080
 # Run the server executable
 CMD [ "/app/server" ]

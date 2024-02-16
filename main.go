@@ -20,7 +20,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
   http.HandleFunc("/", MainHandler)
 
-  port := "5000"
+  port := "8080"
   host := "localhost"
   hp := net.JoinHostPort(host, port)
 
