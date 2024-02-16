@@ -3,11 +3,16 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"github.com/lalathealter/dada/controllers"
+	"github.com/lalathealter/dada/models"
 )
  
 func MainHandler(w http.ResponseWriter, r *http.Request) {
@@ -18,14 +23,29 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
   io.WriteString(w, hname + time.Now().Format("2006-01-02 15:04:05"))
 }
  
-func main() {
-  http.HandleFunc("/", MainHandler)
+func init() {
+  err := godotenv.Load()
+  if err != nil {
+    log.Fatal(err)
+  }
+}
 
-  port := "8080"
-  host := ""
+func main() {
+  db, err := models.InitDB()
+  if err != nil {
+    log.Fatal(err)
+  }
+  wrapper := controllers.InitWrapper(db)
+
+
+  g := gin.New()
+  g.POST("/register", wrapper.HandleRegistration)
+
+  port := os.Getenv("host")
+  host := os.Getenv("port")
   hp := net.JoinHostPort(host, port)
 
   fmt.Println("Listening on port ", port)
-  http.ListenAndServe(hp, nil)
+  g.Run(hp)
 }
 
