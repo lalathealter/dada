@@ -18,21 +18,38 @@ func (wr *Wrapper) HandleRegistration(c *gin.Context) {
 	}
 
 	if !isJustLatin(user.Name) {
+    c.Status(http.StatusBadRequest)
 		c.Error(ErrNonLatinCharactersInName{user.Name})
 		return
 	}
 
-	if wr.users.IsUnique(user.Name) {
-		c.Error(ErrNameNotUnique{user.Name})
-		return
-	}
+  if len(user.Name) > MAX_USERNAME_LEN {
+    c.Status(http.StatusBadRequest)
+    c.Error(ErrNameTooLong{user.Name})
+    return 
+  }
+
+  if !wr.users.IsUnique(user) {
+    c.Status(http.StatusBadRequest)
+    c.Error(ErrNameNotUnique{user.Name})
+    return
+  }
 
 	if err := wr.users.SaveNewUser(user); err != nil {
+    c.Status(http.StatusInternalServerError)
 		c.Error(err)
 		return
 	}
 
 	c.Status(http.StatusCreated)
+}
+
+const MAX_USERNAME_LEN = 32
+type ErrNameTooLong struct {
+  Name string
+}
+func (err ErrNameTooLong) Error() string {
+  return fmt.Sprintf("the provided name [%v] is longer than maximumavailable username length of %v", err.Name, MAX_USERNAME_LEN)
 }
 
 type ErrNonLatinCharactersInName struct {

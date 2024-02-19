@@ -20,7 +20,7 @@ type Wrapper struct {
 }
 
 type UserCollectionI interface {
-	IsUnique(string) bool
 	SaveNewUser(models.User) error
+  IsUnique(models.User) bool
 }
 
