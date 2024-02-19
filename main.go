@@ -26,7 +26,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 func init() {
   err := godotenv.Load()
   if err != nil {
-    log.Fatal(err)
+    fmt.Println("Failed to load local .env file ", err)
   }
 }
 
@@ -38,11 +38,11 @@ func main() {
   wrapper := controllers.InitWrapper(db)
 
 
-  g := gin.New()
+  g := gin.Default()
   g.POST("/register", wrapper.HandleRegistration)
 
-  port := os.Getenv("host")
-  host := os.Getenv("port")
+  host := os.Getenv("host")
+  port := os.Getenv("port")
   hp := net.JoinHostPort(host, port)
 
   fmt.Println("Listening on port ", port)
