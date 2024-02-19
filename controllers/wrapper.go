@@ -40,3 +40,7 @@ type UserCollectionI interface {
   IsUnique(models.User) bool
 }
 
+func ObligateToUseJSON(c *gin.Context) {
+  c.Writer.Header().Set("Content-Type", "application/json")
+  c.Next()
+}

@@ -39,6 +39,7 @@ func main() {
 
 
   g := gin.Default()
+  g.Use(controllers.ObligateToUseJSON)
   g.Use(controllers.HandleErrors)
   g.POST("/register", wrapper.HandleRegistration)
 
