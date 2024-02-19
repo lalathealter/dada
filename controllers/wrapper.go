@@ -35,8 +35,9 @@ func HandleErrors(c *gin.Context) {
   }
 }
 
-
 func ObligateToUseJSON(c *gin.Context) {
   c.Writer.Header().Set("Content-Type", "application/json")
   c.Next()
 }
+
+

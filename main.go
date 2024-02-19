@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/lalathealter/dada/controllers"
+	"github.com/lalathealter/dada/controllers/auth"
 	"github.com/lalathealter/dada/models"
 )
  
@@ -43,6 +44,7 @@ func main() {
   g.Use(controllers.HandleErrors)
   g.POST("/register", wrapper.HandleRegistration)
   g.POST("/login", wrapper.HandleLogin)
+  g.Use(auth.ValidateJWT)
   g.GET("/me", wrapper.HandleViewSelf)
   // g.PATCH("/me")
 
