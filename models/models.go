@@ -12,9 +12,16 @@ type User struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type UserCollectionI interface {
+	SaveNewUser(User) error
+  IsUnique(User) bool
+  HasValidLogin(User) bool
+}
+
 type UserModel struct {
 	DB *sql.DB
 }
+
 
 func (um UserModel) IsUnique(u User) bool {
   row := um.DB.QueryRow(`
@@ -43,5 +50,18 @@ func (um UserModel) SaveNewUser(u User) error {
 
 func produceNameIndex(u User) string {
   return strings.ToLower(u.Name)
+}
+
+func (um UserModel) HasValidLogin(u User) (bool) {
+  row := um.DB.QueryRow(`
+      SELECT password
+      FROM users
+      WHERE username = $1 
+      AND password = crypt($2, password)
+    `, u.Name, u.Password)
+  
+  var pass string
+  row.Scan(&pass)
+  return pass != ""
 }
 

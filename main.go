@@ -42,6 +42,8 @@ func main() {
   g.Use(controllers.ObligateToUseJSON)
   g.Use(controllers.HandleErrors)
   g.POST("/register", wrapper.HandleRegistration)
+  g.POST("/login", wrapper.HandleLogin)
+  // g.PATCH("/me")
 
   host := os.Getenv("host")
   port := os.Getenv("port")

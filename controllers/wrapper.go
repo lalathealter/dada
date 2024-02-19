@@ -17,7 +17,7 @@ func InitWrapper(db *sql.DB) *Wrapper {
 }
 
 type Wrapper struct {
-	users UserCollectionI
+	users models.UserCollectionI
 }
 
 func wrapError(err error) ErrorWrapper {
@@ -35,10 +35,6 @@ func HandleErrors(c *gin.Context) {
   }
 }
 
-type UserCollectionI interface {
-	SaveNewUser(models.User) error
-  IsUnique(models.User) bool
-}
 
 func ObligateToUseJSON(c *gin.Context) {
   c.Writer.Header().Set("Content-Type", "application/json")
