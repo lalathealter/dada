@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"strings"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -16,6 +17,7 @@ type UserCollectionI interface {
 	SaveNewUser(User) error
   IsUnique(User) bool
   HasValidLogin(User) bool
+  GetInfo(User) UserData
 }
 
 type UserModel struct {
@@ -65,3 +67,21 @@ func (um UserModel) HasValidLogin(u User) (bool) {
   return pass != ""
 }
 
+type UserData struct {
+  Username string `json:"username"`
+  Id int `json:"id"`
+  RegDate time.Time `json:"registration_date"`
+  PassChange time.Time `json:"password_changed_at"`
+}
+
+func (um UserModel) GetInfo(u User) UserData{
+  row := um.DB.QueryRow(`
+    SELECT username, id, registration_date, password_changed_at
+    FROM users 
+    WHERE username = $1
+    `, u.Name)
+
+  var ud UserData
+  row.Scan(&ud.Username, &ud.Id, &ud.RegDate, &ud.PassChange)
+  return ud
+}

@@ -14,7 +14,7 @@ import (
 	"github.com/lalathealter/dada/models"
 )
 
-var JWT_SECRET = retrieveSecret()
+
 
 func (wr *Wrapper) HandleLogin(c *gin.Context) {
   
@@ -50,7 +50,7 @@ func forgeUserJWT(u models.User) (string, error) {
   }
 
   token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-  secret := []byte(retrieveSecret())
+  secret := retrieveSecret()
   signedToken, err := token.SignedString(secret)
   return signedToken, err
 }
@@ -61,7 +61,16 @@ func signExpirationTime() int64 {
   return exp
 }
 
-func retrieveSecret() string {
+
+var retrieveSecret = func()func()[]byte {
+  JWT_SECRET := loadSecret()
+  byted := []byte(JWT_SECRET)
+  return func () []byte  {
+    return byted
+  }
+}()
+
+func loadSecret() string {
   sec := os.Getenv("DADA_JWT_SECRET")
   if sec == "" {
     byteSec := make([]byte, 32)

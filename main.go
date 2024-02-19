@@ -43,6 +43,7 @@ func main() {
   g.Use(controllers.HandleErrors)
   g.POST("/register", wrapper.HandleRegistration)
   g.POST("/login", wrapper.HandleLogin)
+  g.GET("/me", wrapper.HandleViewSelf)
   // g.PATCH("/me")
 
   host := os.Getenv("host")
