@@ -24,13 +24,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
   }
   io.WriteString(w, hname + time.Now().Format("2006-01-02 15:04:05"))
 }
- 
-func init() {
-  err := godotenv.Load()
-  if err != nil {
-    fmt.Println("Failed to load local .env file ", err)
-  }
-}
 
 func setupGin(db *sql.DB) *gin.Engine {
 
@@ -49,6 +42,11 @@ func setupGin(db *sql.DB) *gin.Engine {
 }
 
 func main() {
+  err := godotenv.Load()
+  if err != nil {
+    fmt.Println("Failed to load local .env file ", err)
+  }
+
   host := os.Getenv("host")
   port := os.Getenv("port")
   hp := net.JoinHostPort(host, port)
