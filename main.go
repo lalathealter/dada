@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"io"
 	"log"
@@ -31,13 +32,9 @@ func init() {
   }
 }
 
-func main() {
-  db, err := models.InitDB()
-  if err != nil {
-    log.Fatal(err)
-  }
-  wrapper := controllers.InitWrapper(db)
+func setupGin(db *sql.DB) *gin.Engine {
 
+  wrapper := controllers.InitWrapper(db)
 
   g := gin.Default()
   g.Use(controllers.ObligateToUseJSON)
@@ -48,9 +45,19 @@ func main() {
   g.GET("/me", wrapper.HandleViewSelf)
   g.PATCH("/me", wrapper.HandleUsernameChange)
 
+  return g
+}
+
+func main() {
   host := os.Getenv("host")
   port := os.Getenv("port")
   hp := net.JoinHostPort(host, port)
+
+  db, err := models.InitDB()
+  if err != nil {
+    log.Fatal(err)
+  }
+  g := setupGin(db)
 
   fmt.Println("Listening on port ", port)
   g.Run(hp)
