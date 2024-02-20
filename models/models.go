@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"strings"
 	"time"
 
@@ -18,6 +19,7 @@ type UserCollectionI interface {
   IsUnique(User) bool
   HasValidLogin(User) bool
   GetInfo(User) UserData
+  ChangeUsername(string, string) error
 }
 
 type UserModel struct {
@@ -30,7 +32,7 @@ func (um UserModel) IsUnique(u User) bool {
     SELECT username
     FROM users
     WHERE name_index = $1
-    `, produceNameIndex(u))
+    `, produceNameIndex(u.Name))
   var res string
   row.Scan(&res)
   return res == ""
@@ -40,7 +42,7 @@ func (um UserModel) SaveNewUser(u User) error {
   res, err := um.DB.Query(`
     INSERT INTO USERS(username, name_index, password)
     VALUES($1, $2, crypt($3, gen_salt('md5')))
-    `, u.Name, produceNameIndex(u), u.Password)
+    `, u.Name, produceNameIndex(u.Name), u.Password)
 
   if err != nil {
     return err
@@ -50,8 +52,8 @@ func (um UserModel) SaveNewUser(u User) error {
   return res.Err()
 }
 
-func produceNameIndex(u User) string {
-  return strings.ToLower(u.Name)
+func produceNameIndex(name string) string {
+  return strings.ToLower(name)
 }
 
 func (um UserModel) HasValidLogin(u User) (bool) {
@@ -84,4 +86,33 @@ func (um UserModel) GetInfo(u User) UserData{
   var ud UserData
   row.Scan(&ud.Username, &ud.Id, &ud.RegDate, &ud.PassChange)
   return ud
+}
+
+
+type NewUsernamePackage struct {
+  Name string `json:"new_username" binding:"required"`
+}
+
+var ErrFailedToChangeUsername = errors.New("Internal error; Failed to change the username")
+func (um UserModel) ChangeUsername(prev, next string) error {
+  res, err := um.DB.Exec(`
+    UPDATE users
+    SET username = $1,
+      name_index = $2
+    WHERE username = $3
+    `, next, produceNameIndex(next), prev)
+
+  if err != nil {
+    return err
+  }
+
+  n, err := res.RowsAffected() 
+  if err != nil {
+    return err
+  }
+  if n < 0 {
+    return ErrFailedToChangeUsername
+  }
+
+  return nil
 }

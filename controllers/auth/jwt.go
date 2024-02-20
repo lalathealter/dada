@@ -35,6 +35,8 @@ func SetCookieJWT(c *gin.Context, tokenStr string) {
 func GetCookieJWT(c *gin.Context) string {
   fullStr := c.GetHeader(AUTH_TOKEN_HEADER)
   return strings.Split(fullStr, " ")[1]
+  // the contents of AUTHORIZATION are typically set as
+  // "Bearer *some-data*", so we are skipping the "Bearer" part
 }
 
 const MAX_ACCESS_MINUTES = 12 * 60

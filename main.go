@@ -46,7 +46,7 @@ func main() {
   g.POST("/login", wrapper.HandleLogin)
   g.Use(auth.ValidateJWT)
   g.GET("/me", wrapper.HandleViewSelf)
-  // g.PATCH("/me")
+  g.PATCH("/me", wrapper.HandleUsernameChange)
 
   host := os.Getenv("host")
   port := os.Getenv("port")
