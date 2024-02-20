@@ -16,7 +16,7 @@ type User struct {
 
 type UserCollectionI interface {
 	SaveNewUser(User) error
-  IsUnique(User) bool
+  IsUnique(string) bool
   HasValidLogin(User) bool
   GetInfo(User) UserData
   ChangeUsername(string, string) error
@@ -27,12 +27,12 @@ type UserModel struct {
 }
 
 
-func (um UserModel) IsUnique(u User) bool {
+func (um UserModel) IsUnique(name string) bool {
   row := um.DB.QueryRow(`
     SELECT username
     FROM users
     WHERE name_index = $1
-    `, produceNameIndex(u.Name))
+    `, produceNameIndex(name))
   var res string
   row.Scan(&res)
   return res == ""

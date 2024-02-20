@@ -23,6 +23,11 @@ func (wr *Wrapper) HandleUsernameChange(c *gin.Context) {
     return
   }
 
+  if err := wr.validateName(nup.Name); err != nil {
+    c.AbortWithError(http.StatusBadRequest, err)
+    return
+  }
+
   err = wr.users.ChangeUsername(name, nup.Name)
   if err != nil {
     c.AbortWithError(http.StatusInternalServerError, err)

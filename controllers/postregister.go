@@ -16,14 +16,7 @@ func (wr *Wrapper) HandleRegistration(c *gin.Context) {
 		return
 	}
 
-	if !isJustLatin(user.Name) {
-    err := ErrNonLatinCharactersInName{user.Name}
-    c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-  if !wr.users.IsUnique(user) {
-    err := ErrNameNotUnique{user.Name}
+  if err := wr.validateName(user.Name); err != nil {
     c.AbortWithError(http.StatusBadRequest, err)
     return
   }
@@ -34,6 +27,18 @@ func (wr *Wrapper) HandleRegistration(c *gin.Context) {
 	}
 
 	c.Status(http.StatusCreated)
+}
+
+func (wr *Wrapper) validateName(name string) error {
+  if !isJustLatin(name) {
+    return ErrNonLatinCharactersInName{name}
+	}
+
+  if !wr.users.IsUnique(name) {
+    return ErrNameNotUnique{name}
+  }
+
+  return nil
 }
 
 type ErrNonLatinCharactersInName struct {
