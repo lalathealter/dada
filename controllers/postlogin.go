@@ -30,7 +30,8 @@ func (wr *Wrapper) HandleLogin(c *gin.Context) {
     c.AbortWithError(http.StatusInternalServerError, err)
     return
   }
-
+  
+  auth.SetCookieJWT(c, tokenStr)
   c.JSON(http.StatusCreated, gin.H{
     "token": tokenStr,
   })

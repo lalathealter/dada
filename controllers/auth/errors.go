@@ -17,7 +17,6 @@ func (err ErrUnexpectedSigningMethod) Error() string {
 
 var ErrNoTokenProvided = errors.New("No authorization token was provided; Denied access")
 var ErrInvalidToken = errors.New("The provided authorization token is invalid; Denied access")
-var ErrCouldntParseJWToken = errors.New("Could not parse authorization token")
 
 var ErrNoClaimsProvided = errors.New("No claims were provided with the token; Token is invalid")
 

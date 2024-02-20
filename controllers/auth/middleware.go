@@ -7,28 +7,21 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type Auth struct {
-	Token string `json:"token" binding:"required"`
-}
-
 const CONTEXT_JWT_KEY = "jwt-token"
 const CONTEXT_JWT_CLAIMS_KEY = "jwt-claims"
 
 func ValidateJWT(c *gin.Context) {
-	var au Auth
-	if err := c.ShouldBindJSON(&au); err != nil {
+  tokenStr := GetCookieJWT(c)
+  if tokenStr == "" {
 		c.AbortWithError(http.StatusUnauthorized, ErrNoTokenProvided)
-		return
-	}
+    return
+  }
 
 	claims := jwt.MapClaims{}
-	tokenObj, err := jwt.ParseWithClaims(au.Token, claims, prepForParsingJWT)
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, ErrCouldntParseJWToken)
-		return
-	} else if !tokenObj.Valid {
+	tokenObj, err := jwt.ParseWithClaims(tokenStr, claims, prepForParsingJWT)
+	if err != nil || !tokenObj.Valid {
 		c.AbortWithError(http.StatusBadRequest, ErrInvalidToken)
-		return
+    return
 	}
 
 	c.Set(CONTEXT_JWT_KEY, tokenObj)

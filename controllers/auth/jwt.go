@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -23,6 +24,17 @@ func ForgeUserJWT(u models.User) (string, error) {
   secret := RetrieveSecret()
   signedToken, err := token.SignedString(secret)
   return signedToken, err
+}
+
+const AUTH_TOKEN_HEADER = "Authorization"
+
+func SetCookieJWT(c *gin.Context, tokenStr string) {
+  c.Header(AUTH_TOKEN_HEADER, tokenStr)
+}
+
+func GetCookieJWT(c *gin.Context) string {
+  fullStr := c.GetHeader(AUTH_TOKEN_HEADER)
+  return strings.Split(fullStr, " ")[1]
 }
 
 const MAX_ACCESS_MINUTES = 12 * 60
